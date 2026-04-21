@@ -7,6 +7,7 @@ public class MainVueltaEjercicio2 {
         Scanner sc = new Scanner(System.in);
         int opcion = -1;
 
+        // Un bucle donde manejamos los operaciones con los ciclistas
         while (opcion != 0) {
             System.out.println("----- MENU -------");
             System.out.println("1. Insertar nuevo ciclista");
@@ -23,7 +24,10 @@ public class MainVueltaEjercicio2 {
                     "RIBERA",
                     "ribera"
             )) {
+                // Switch para manejar los opciones
                 switch (opcion) {
+                    // Caso 1: Insertar nuevo ciclista
+                    // Pedimos por el teclado los datos
                     case 1:
                         System.out.println("Escribe el nombre del ciclista: ");
                         String nombre = sc.nextLine();
@@ -39,11 +43,15 @@ public class MainVueltaEjercicio2 {
                         int idEquipo = sc.nextInt();
                         sc.nextLine();
 
+                        // Comprobamos si el id de equipo existe o no
+                        // Sino rompemos este caso
                         if (!comprobar(connection, "EQUIPO", "ID_EQUIPO", idEquipo)) {
                             System.out.println("El id de equipo no existe.");
                             break;
                         }
 
+                        // Aqui asignamos el ID para ciclista. Si no hay ciclistas, pues el id es 1.
+                        // Si hay ciclistas, se encuentra el maximo ID y le suma 1.
                         int nuevoId = 1;
                         String sqlMaxId = "SELECT MAX(ID_CICLISTA) FROM CICLISTA";
 
@@ -53,6 +61,8 @@ public class MainVueltaEjercicio2 {
                             nuevoId = rsMaxId.getInt(1) + 1;
                         }
 
+                        // Sql para insertar el ciclista en tabla.
+                        // PreparedStatement nos permite hacerlo.
                         String sqlInsertar = "INSERT INTO CICLISTA (ID_CICLISTA, NOMBRE, NACIONALIDAD, EDAD, ID_EQUIPO) VALUES (?, ?, ?, ?, ?)";
                         PreparedStatement psInsertar = connection.prepareStatement(sqlInsertar);
                         psInsertar.setInt(1, nuevoId);
@@ -65,6 +75,8 @@ public class MainVueltaEjercicio2 {
                         System.out.println("Nuevo ciclista se ha insertado!");
                         break;
                     case 2:
+                        // Caso 2: Actualizar el ciclista
+                        // Pedimos por el teclado los datos
                         System.out.println("Escribe el id de ciclista: ");
                         int idCiclista = sc.nextInt();
                         sc.nextLine();
@@ -77,6 +89,7 @@ public class MainVueltaEjercicio2 {
                         int idEquipoNuevo = sc.nextInt();
                         sc.nextLine();
 
+                        // Luego comprobamos si existe ID de ciclista Y de equipo
                         if (!comprobar(connection, "CICLISTA", "ID_CICLISTA", idCiclista)) {
                             System.out.println("El id de ciclista no existe.");
                             break;
@@ -87,6 +100,7 @@ public class MainVueltaEjercicio2 {
                             break;
                         }
 
+                        // Sql para actualizar ciclista
                         String sqlActualizar = "UPDATE CICLISTA SET EDAD = ?, ID_EQUIPO = ? WHERE ID_CICLISTA = ?";
                         PreparedStatement psActualizar = connection.prepareStatement(sqlActualizar);
                         psActualizar.setInt(1, edadNueva);
@@ -97,6 +111,8 @@ public class MainVueltaEjercicio2 {
                         System.out.println("El ciclista se ha actualizado!");
                         break;
                     case 3:
+                        // Caso 3: Eliminar ciclista
+                        // Aqui solamente pedimos el id y le eliminamos utilizando un PreparedStatement con consulta
                         System.out.println("Escribe el id de ciclista: ");
                         int idCiclistaParaEliminar = sc.nextInt();
                         sc.nextLine();
@@ -131,6 +147,7 @@ public class MainVueltaEjercicio2 {
         }
     }
 
+    // Un metodo que sirve para comprobar alguna columna en alguna tabla
     public static boolean comprobar(Connection conexion, String tabla, String columna, int id) throws SQLException {
         String comprobar = "SELECT COUNT(*) FROM " + tabla + " WHERE " + columna + " = ?";
         PreparedStatement psDeComprueba = conexion.prepareStatement(comprobar);
